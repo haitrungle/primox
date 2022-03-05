@@ -38,7 +38,7 @@ fn run_prompt() {
                 }
             },
             Err(error) => {
-                println!("error: {}", error);
+                println!("error: {error}");
                 break;
             },
         }
@@ -47,4 +47,12 @@ fn run_prompt() {
 
 fn run(source: &str) {
     print!("{}", source);
+}
+
+fn error(line: usize, message: &str) {
+    report(line, "", message);
+}
+
+fn report(line: usize, err: &str, message: &str) {
+    println!("[line {line}] Error {err}: {message}");
 }
