@@ -1,5 +1,4 @@
 use std::env;
-use std::error::Error;
 use std::fs;
 use std::io;
 use std::io::Write;
@@ -27,10 +26,12 @@ impl Lox {
         Self { had_error: false }
     }
 
-    fn run_file(&mut self, path: &str) -> Result<(), Box<dyn Error>> {
-        let content: String = fs::read_to_string(path)?;
+    fn run_file(&mut self, path: &str) {
+        let content: String = fs::read_to_string(path).unwrap();
         self.run(&content);
-        Ok(())
+        if self.had_error {
+            process::exit(65);
+        }
     }
 
     fn run_prompt(&mut self) {
@@ -46,6 +47,7 @@ impl Lox {
                         break;
                     } else {
                         self.run(&buffer);
+                        self.had_error = false;
                     }
                 }
                 Err(error) => {
