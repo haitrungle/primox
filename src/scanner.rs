@@ -1,10 +1,9 @@
-use std::collections::HashMap;
 use phf::phf_map;
 
 use crate::token_type::TokenType::{self, *};
 use crate::{token::*, Lox};
 
-struct Scanner {
+pub(crate) struct Scanner {
   source: String,
   tokens: Vec<Token>,
   start: usize,
@@ -32,7 +31,7 @@ impl Scanner {
     "while" =>  WHILE,
   };
 
-  fn new(source: String) -> Self {
+  pub fn new(source: String) -> Self {
     Self {
       source,
       tokens: vec![],
@@ -42,7 +41,7 @@ impl Scanner {
     }
   }
 
-  fn scan_tokens(&mut self) -> Vec<Token> {
+  pub(crate) fn scan_tokens(&mut self) -> Vec<Token> {
     while !(self.is_at_end()) {
       self.start = self.current;
       self.scan_token();

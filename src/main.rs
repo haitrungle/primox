@@ -8,6 +8,8 @@ use std::io;
 use std::io::Write;
 use std::process;
 
+use scanner::Scanner;
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     let mut program = Lox::new();
@@ -32,7 +34,7 @@ impl Lox {
 
     fn run_file(&mut self, path: &str) {
         let content: String = fs::read_to_string(path).unwrap();
-        self.run(&content);
+        self.run(content);
         if self.had_error {
             process::exit(65);
         }
@@ -50,7 +52,7 @@ impl Lox {
                     if n == 0 {
                         break;
                     } else {
-                        self.run(&buffer);
+                        self.run(buffer);
                         self.had_error = false;
                     }
                 }
@@ -62,8 +64,13 @@ impl Lox {
         }
     }
 
-    fn run(&mut self, source: &str) {
-        print!("{}", source);
+    fn run(&mut self, source: String) {
+        let mut scanner = Scanner::new(source);
+        let tokens = scanner.scan_tokens();
+
+        for token in tokens {
+            println!("{:?}", token);
+        }
     }
 
     fn error(line: usize, message: &str) {
