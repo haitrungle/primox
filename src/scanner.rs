@@ -45,8 +45,36 @@ impl Scanner {
       ';' => self.add_token(SEMICOLON, None),
       '*' => self.add_token(STAR, None),
 
+      '!' => {
+        let t = if self.next_is('=') { BANG_EQUAL } else { BANG };
+        self.add_token(t, None);
+      },
+      '=' => {
+        let t = if self.next_is('=') { EQUAL_EQUAL } else { EQUAL };
+        self.add_token(t, None);
+      },
+      '<' => {
+        let t = if self.next_is('=') { LESS_EQUAL } else { LESS };
+        self.add_token(t, None);
+      },
+      '>' => {
+        let t = if self.next_is('=') { GREATER_EQUAL } else { GREATER };
+        self.add_token(t, None);
+      },
+
       // TODO: coalesce a run of invalid characters into a single error
       _ => Lox::error(self.line, "Unexpected character"),
+    }
+  }
+
+  fn next_is(&mut self, expected: char) -> bool {
+    if self.is_at_end() {
+      false
+    } else if self.source.chars().nth(self.current).unwrap() != expected {
+      false
+    } else {
+      self.current += 1;
+      true
     }
   }
 
