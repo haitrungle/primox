@@ -1,3 +1,5 @@
+mod token_type;
+
 use std::env;
 use std::fs;
 use std::io;
