@@ -1,8 +1,8 @@
-use std::io::Write;
 use std::env;
-use std::io;
 use std::error::Error;
 use std::fs;
+use std::io;
+use std::io::Write;
 use std::process;
 
 fn main() {
@@ -36,6 +36,7 @@ impl Lox {
     fn run_prompt(&mut self) {
         loop {
             print!("> ");
+            // https://stackoverflow.com/a/34993992
             io::stdout().flush().expect("flush failed!");
 
             let mut buffer = String::new();
@@ -46,11 +47,11 @@ impl Lox {
                     } else {
                         self.run(&buffer);
                     }
-                },
+                }
                 Err(error) => {
                     println!("error: {error}");
                     break;
-                },
+                }
             }
         }
     }
