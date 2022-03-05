@@ -1,4 +1,5 @@
-enum TokenType {
+#[derive(Debug)]
+pub(crate) enum TokenType {
   // Single-character tokens.
   LeftParen, RightParen, LeftBrace, RightBrace,
   Comma, Dot, Minus, Plus, Semicolon, Slash, Star,
