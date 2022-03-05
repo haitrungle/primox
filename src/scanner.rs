@@ -1,3 +1,6 @@
+use std::collections::HashMap;
+use phf::phf_map;
+
 use crate::token_type::TokenType::{self, *};
 use crate::{token::*, Lox};
 
@@ -10,6 +13,25 @@ struct Scanner {
 }
 
 impl Scanner {
+  const keywords: phf::Map<&'static str, TokenType> = phf_map! {
+    "and" =>    AND,
+    "class" =>  CLASS,
+    "else" =>   ELSE,
+    "false" =>  FALSE,
+    "for" =>    FOR,
+    "fun" =>    FUN,
+    "if" =>     IF,
+    "nil" =>    NIL,
+    "or" =>     OR,
+    "print" =>  PRINT,
+    "return" => RETURN,
+    "super" =>  SUPER,
+    "this" =>   THIS,
+    "true" =>   TRUE,
+    "var" =>    VAR,
+    "while" =>  WHILE,
+  };
+
   fn new(source: String) -> Self {
     Self {
       source,
@@ -82,12 +104,25 @@ impl Scanner {
       // TODO: coalesce a run of invalid characters into a single error
       _ => {
         if c.is_ascii_digit() {
-          self.number()
+          self.number();
+        } else if c.is_ascii_alphabetic() {
+          self.identifier();
         } else {
           Lox::error(self.line, "Unexpected character");
         }
       }
     }
+  }
+
+  fn identifier(&mut self) {
+    while self.peek().is_ascii_alphanumeric() {
+      self.advance();
+    }
+
+    let text = self.source.get(self.start..self.current).unwrap();
+    let token_type = Self::keywords.get(text).unwrap_or(&IDENTIFIER).to_owned();
+
+    self.add_token(token_type, None);
   }
 
   fn string(&mut self) {
