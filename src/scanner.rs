@@ -77,9 +77,32 @@ impl Scanner {
 
       '\n' => self.line += 1,
 
+      '"' => self.string(),
+
       // TODO: coalesce a run of invalid characters into a single error
       _ => Lox::error(self.line, "Unexpected character"),
     }
+  }
+
+  fn string(&mut self) {
+    while self.peek() != '"' && !self.is_at_end() {
+      if self.peek() == '\n' {
+        self.line += 1;
+      }
+      self.advance();
+    }
+
+    if self.is_at_end() {
+      Lox::error(self.line, "Unterminated string");
+      return;
+    }
+
+    // The closing "
+    self.advance();
+
+    // Trim the surrounding quotes
+    let value = self.source.get((self.start+1)..(self.current-1)).unwrap().to_string();
+    self.add_token(STRING, Some(Literal::String(value)));
   }
 
   fn next_is(&mut self, expected: char) -> bool {
