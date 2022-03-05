@@ -1,18 +1,24 @@
 use crate::token_type::TokenType;
 
-#[derive(Debug)]
-struct Token<T> {
+#[derive(Debug, Clone)]
+pub(crate) enum Literal {
+  Number(f64),
+  String(String),
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct Token {
   _type: TokenType,
   lexeme: String,
-  literal: T,
+  literal: Option<Literal>,
   line: usize,
 }
 
-impl<T> Token<T> {
-  fn new(token_type: TokenType, lexeme: String, literal: T, line: usize) -> Self {
+impl Token {
+  pub(crate) fn new(token_type: TokenType, lexeme: &str, literal: Option<Literal>, line: usize) -> Self {
     Self {
       _type: token_type,
-      lexeme,
+      lexeme: lexeme.to_string(),
       literal,
       line,
     }
