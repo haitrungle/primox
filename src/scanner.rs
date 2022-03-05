@@ -62,6 +62,21 @@ impl Scanner {
         self.add_token(t, None);
       },
 
+      '/' => {
+        if self.next_is('/') {
+          // A comment goes until the end of the line.
+          while self.peek() != '\n' && !self.is_at_end() {
+            self.advance();
+          }
+        } else {
+          self.add_token(SLASH, None);
+        }
+      },
+
+      ' ' | '\r' | '\t' => {},
+
+      '\n' => self.line += 1,
+
       // TODO: coalesce a run of invalid characters into a single error
       _ => Lox::error(self.line, "Unexpected character"),
     }
@@ -75,6 +90,14 @@ impl Scanner {
     } else {
       self.current += 1;
       true
+    }
+  }
+
+  fn peek(&self) -> char {
+    if self.is_at_end() {
+      '\0'
+    } else {
+      self.source.chars().nth(self.current).unwrap()
     }
   }
 
