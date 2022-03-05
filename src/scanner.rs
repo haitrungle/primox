@@ -132,7 +132,7 @@ impl Scanner {
   fn next_is(&mut self, expected: char) -> bool {
     if self.is_at_end() {
       false
-    } else if self.source.chars().nth(self.current).unwrap() != expected {
+    } else if self.char_at(self.current) != expected {
       false
     } else {
       self.current += 1;
@@ -144,7 +144,7 @@ impl Scanner {
     if self.is_at_end() {
       '\0'
     } else {
-      self.source.chars().nth(self.current).unwrap()
+      self.char_at(self.current)
     }
   }
 
@@ -152,7 +152,7 @@ impl Scanner {
     if self.current + 1 >= self.source.len() {
       '\0'
     } else {
-      self.source.chars().nth(self.current).unwrap()
+      self.char_at(self.current)
     }
   }
 
@@ -160,7 +160,11 @@ impl Scanner {
     // TODO: this is wildly inefficient, as it reiterate over the source
     // string everytime. Maybe use the iterator directly?
     self.current += 1;
-    self.source.chars().nth(self.current-1).unwrap()
+    self.char_at(self.current-1)
+  }
+
+  fn char_at(&self, position: usize) -> char {
+    self.source.chars().nth(position).unwrap()
   }
 
   fn add_token(&mut self, token_type: TokenType, literal: Option<Literal>) {
