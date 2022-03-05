@@ -80,7 +80,13 @@ impl Scanner {
       '"' => self.string(),
 
       // TODO: coalesce a run of invalid characters into a single error
-      _ => Lox::error(self.line, "Unexpected character"),
+      _ => {
+        if c.is_ascii_digit() {
+          self.number()
+        } else {
+          Lox::error(self.line, "Unexpected character");
+        }
+      }
     }
   }
 
@@ -105,6 +111,24 @@ impl Scanner {
     self.add_token(STRING, Some(Literal::String(value)));
   }
 
+  fn number(&mut self) {
+    while self.peek().is_ascii_digit() {
+      self.advance();
+    }
+
+    if self.peek() == '.' && self.peek_next().is_ascii_digit() {
+      // Consume the '.'
+      self.advance();
+      while self.peek().is_ascii_digit() {
+        self.advance();
+      }
+    }
+
+    // TODO: what if there is no digit after the decimal point?
+    let value = self.source.get(self.start..self.current).unwrap().parse::<f64>().unwrap();
+    self.add_token(NUMBER, Some(Literal::Number(value)));
+  }
+
   fn next_is(&mut self, expected: char) -> bool {
     if self.is_at_end() {
       false
@@ -118,6 +142,14 @@ impl Scanner {
 
   fn peek(&self) -> char {
     if self.is_at_end() {
+      '\0'
+    } else {
+      self.source.chars().nth(self.current).unwrap()
+    }
+  }
+
+  fn peek_next(&self) -> char {
+    if self.current + 1 >= self.source.len() {
       '\0'
     } else {
       self.source.chars().nth(self.current).unwrap()
