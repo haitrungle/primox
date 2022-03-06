@@ -97,6 +97,19 @@ impl Scanner {
                     while self.peek() != '\n' && !self.is_at_end() {
                         self.advance();
                     }
+                } else if self.next_is('*') {
+                    while !self.is_at_end() && (self.peek() != '*' || self.peek_next() != '/') {
+                        if self.peek() == '\n' {
+                            self.line += 1;
+                        }
+                        self.advance();
+                    }
+                    if self.is_at_end() {
+                        Lox::error(self.line, "Unterminated multiline comment");
+                        return;
+                    }
+                    self.advance();
+                    self.advance();
                 } else {
                     self.add_token(SLASH, None);
                 }
@@ -203,7 +216,7 @@ impl Scanner {
         if self.current + 1 >= self.source.len() {
             '\0'
         } else {
-            self.char_at(self.current)
+            self.char_at(self.current + 1)
         }
     }
 
