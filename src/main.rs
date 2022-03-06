@@ -10,7 +10,7 @@ fn main() {
         println!("Usage: rlox [script]");
         process::exit(1);
     } else if args.len() == 2 {
-        program.run_file(&args[2]);
+        program.run_file(&args[1]);
     } else {
         program.run_prompt();
     }

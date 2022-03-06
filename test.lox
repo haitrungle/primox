@@ -1,0 +1,13 @@
+/* Multiline comments
+ * Fun huh
+ */
+
+var variable = "Hello World!";
+
+// Another comment
+
+if (variable != "Love") {
+  print "yes";
+} else {
+  print "no";
+}
