@@ -1,7 +1,7 @@
 use crate::token_type::TokenType;
 
 #[derive(Debug, Clone)]
-pub(crate) enum Literal {
+pub(crate) enum LiteralToken {
     Number(f64),
     String(String),
 }
@@ -10,7 +10,7 @@ pub(crate) enum Literal {
 pub(crate) struct Token {
     _type: TokenType,
     lexeme: String,
-    literal: Option<Literal>,
+    literal: Option<LiteralToken>,
     line: usize,
 }
 
@@ -18,7 +18,7 @@ impl Token {
     pub(crate) fn new(
         token_type: TokenType,
         lexeme: &str,
-        literal: Option<Literal>,
+        literal: Option<LiteralToken>,
         line: usize,
     ) -> Self {
         Self {

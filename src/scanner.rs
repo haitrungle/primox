@@ -167,7 +167,7 @@ impl Scanner {
             .get((self.start + 1)..(self.current - 1))
             .unwrap()
             .to_string();
-        self.add_token(STRING, Some(Literal::String(value)));
+        self.add_token(STRING, Some(LiteralToken::String(value)));
     }
 
     fn number(&mut self) {
@@ -190,7 +190,7 @@ impl Scanner {
             .unwrap()
             .parse::<f64>()
             .unwrap();
-        self.add_token(NUMBER, Some(Literal::Number(value)));
+        self.add_token(NUMBER, Some(LiteralToken::Number(value)));
     }
 
     fn next_is(&mut self, expected: char) -> bool {
@@ -231,7 +231,7 @@ impl Scanner {
         self.source.chars().nth(position).unwrap()
     }
 
-    fn add_token(&mut self, token_type: TokenType, literal: Option<Literal>) {
+    fn add_token(&mut self, token_type: TokenType, literal: Option<LiteralToken>) {
         let text = self.source.get(self.start..self.current).unwrap();
         let token = Token::new(token_type, text, literal, self.line);
         self.tokens.push(token);
