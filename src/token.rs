@@ -9,7 +9,7 @@ pub(crate) enum LiteralToken {
 #[derive(Debug, Clone)]
 pub(crate) struct Token {
     _type: TokenType,
-    lexeme: String,
+    pub(crate) lexeme: String,
     literal: Option<LiteralToken>,
     line: usize,
 }
