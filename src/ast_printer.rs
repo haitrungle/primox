@@ -1,52 +1,45 @@
+use derive_new::new;
+
 use crate::expr::*;
 use crate::token::LiteralToken;
 use crate::token_type::TokenType;
 
-trait Print {
-    fn print(&self) -> String;
-}
+#[derive(new)]
+struct AstPrinter;
 
-impl Print for Expr {
-    fn print(&self) -> String {
-        match self {
-            Expr::Binary(e) => e.print(),
-            Expr::Grouping(e) => e.print(),
-            Expr::Literal(e) => e.print(),
-            Expr::Unary(e) => e.print(),
-        }
-    }
-}
-
-impl Print for Binary {
-    fn print(&self) -> String {
+impl AstPrinter {
+    fn print_binary_expr(e: Binary) -> String {
         format!(
             "({} {} {})",
-            self.operator.lexeme,
-            self.left.print(),
-            self.right.print()
+            e.operator.lexeme,
+            Self::print(e.left),
+            Self::print(e.right)
         )
     }
-}
 
-impl Print for Grouping {
-    fn print(&self) -> String {
-        format!("(group {})", self.expression.print())
+    fn print_grouping_expr(e: Grouping) -> String {
+        format!("(group {})", Self::print(e.expression))
     }
-}
 
-impl Print for Literal {
-    fn print(&self) -> String {
-        match &self.value {
+    fn print_literal_expr(e: Literal) -> String {
+        match &e.value {
             Some(LiteralToken::Number(v)) => format!("{}", v),
             Some(LiteralToken::String(v)) => format!("{}", v),
             None => "nil".to_string(),
         }
     }
-}
 
-impl Print for Unary {
-    fn print(&self) -> String {
-        format!("({} {})", self.operator.lexeme, self.right.print())
+    fn print_unary_expr(e: Unary) -> String {
+        format!("({} {})", e.operator.lexeme, Self::print(e.right))
+    }
+
+    fn print(e: Expr) -> String {
+        match e {
+            Expr::Binary(b) => Self::print_binary_expr(*b),
+            Expr::Grouping(g) => Self::print_grouping_expr(*g),
+            Expr::Literal(l) => Self::print_literal_expr(*l),
+            Expr::Unary(u) => Self::print_unary_expr(*u),
+        }
     }
 }
 
@@ -69,6 +62,6 @@ mod test {
         )
         .into();
 
-        assert_eq!(expr.print(), "(* (- 123) (group 45.67))");
+        assert_eq!(AstPrinter::print(expr), "(* (- 123) (group 45.67))");
     }
 }
