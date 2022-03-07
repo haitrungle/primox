@@ -3,6 +3,7 @@ mod expr;
 mod scanner;
 mod token;
 mod token_type;
+mod rpn_printer;
 
 use std::fs;
 use std::io;
