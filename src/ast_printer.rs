@@ -19,7 +19,12 @@ impl Print for Expr {
 
 impl Print for Binary {
     fn print(&self) -> String {
-        format!("({} {} {})", self.operator.lexeme, self.left.print(), self.right.print())
+        format!(
+            "({} {} {})",
+            self.operator.lexeme,
+            self.left.print(),
+            self.right.print()
+        )
     }
 }
 
@@ -47,7 +52,7 @@ impl Print for Unary {
 
 #[cfg(test)]
 mod test {
-    use crate::token::{Token, LiteralToken};
+    use crate::token::{LiteralToken, Token};
 
     use super::*;
 
@@ -57,12 +62,12 @@ mod test {
             Unary::new(
                 Token::new(TokenType::MINUS, "-", None, 1),
                 Literal::new(Some(LiteralToken::Number(123.0))).into(),
-            ).into(),
+            )
+            .into(),
             Token::new(TokenType::STAR, "*", None, 1),
-            Grouping::new(
-                Literal::new(Some(LiteralToken::Number(45.67))).into()
-            ).into()
-        ).into();
+            Grouping::new(Literal::new(Some(LiteralToken::Number(45.67))).into()).into(),
+        )
+        .into();
 
         assert_eq!(expr.print(), "(* (- 123) (group 45.67))");
     }
