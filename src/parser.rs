@@ -32,7 +32,7 @@ impl Parser {
     }
 
     fn current_is(&mut self, types: &[TokenType]) -> bool {
-        for &ty in types {
+        for ty in types {
             if self.check(ty) {
                 // Not sure we need to consume the token
                 self.advance();
@@ -43,11 +43,11 @@ impl Parser {
         false
     }
 
-    fn check(&self, ty: TokenType) -> bool {
+    fn check(&self, ty: &TokenType) -> bool {
         if self.is_at_end() {
             false
         } else {
-            self.peek().ty == ty
+            &self.peek().ty == ty
         }
     }
 
