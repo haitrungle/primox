@@ -63,10 +63,10 @@ impl Parser {
     }
 
     fn peek(&self) -> Token {
-        self.tokens[self.current]
+        self.tokens[self.current].clone()
     }
 
     fn previous(&self) -> Token {
-        self.tokens[self.current - 1]
+        self.tokens[self.current - 1].clone()
     }
 }
