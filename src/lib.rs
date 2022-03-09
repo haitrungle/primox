@@ -1,9 +1,10 @@
 mod ast_printer;
 mod expr;
+mod parser;
+mod rpn_printer;
 mod scanner;
 mod token;
 mod token_type;
-mod rpn_printer;
 
 use std::fs;
 use std::io;
