@@ -1,4 +1,4 @@
-use crate::expr::{Binary, Expr};
+use crate::expr::*;
 use crate::token::*;
 use crate::token_type::TokenType::{self, *};
 
@@ -29,6 +29,56 @@ impl Parser {
         }
 
         expr
+    }
+
+    fn comparison(&mut self) -> Expr {
+        let mut term: Expr = self.term();
+
+        while self.current_is(&[GREATER, GREATER_EQUAL, LESS, LESS_EQUAL]) {
+            let operator = self.previous();
+            let right = self.term();
+            term = Binary::new(term, operator, right).into();
+        }
+
+        term
+    }
+
+    fn term(&mut self) -> Expr {
+        let mut factor: Expr = self.factor();
+
+        while self.current_is(&[MINUS, PLUS]) {
+            let operator = self.previous();
+            let right = self.factor();
+            factor = Binary::new(factor, operator, right).into();
+        }
+
+        factor
+    }
+
+    fn factor(&mut self) -> Expr {
+        let mut unary: Expr = self.unary();
+
+        while self.current_is(&[SLASH, STAR]) {
+            let operator = self.previous();
+            let right = self.unary();
+            unary = Binary::new(unary, operator, right).into();
+        }
+
+        unary
+    }
+
+    fn unary(&mut self) -> Expr {
+        if self.current_is(&[BANG, MINUS]) {
+            let operator = self.previous();
+            let right = self.unary();
+            Unary::new(operator, right).into()
+        } else {
+            self.primary()
+        }
+    }
+
+    fn primary(&mut self) -> Expr {
+        todo!()
     }
 
     fn current_is(&mut self, types: &[TokenType]) -> bool {
