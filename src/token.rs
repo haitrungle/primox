@@ -2,6 +2,7 @@ use crate::token_type::TokenType;
 
 #[derive(Debug, Clone)]
 pub(crate) enum LiteralToken {
+    Bool(bool),
     Number(f64),
     String(String),
 }

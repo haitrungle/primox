@@ -78,6 +78,24 @@ impl Parser {
     }
 
     fn primary(&mut self) -> Expr {
+        if self.current_is(&[FALSE]) {
+            Literal::new(Some(LiteralToken::Bool(false))).into()
+        } else if self.current_is(&[TRUE]) {
+            Literal::new(Some(LiteralToken::Bool(true))).into()
+        } else if self.current_is(&[NIL]) {
+            Literal::new(None).into()
+        } else if self.current_is(&[NUMBER, STRING]) {
+            Literal::new(self.previous().literal).into()
+        } else if self.current_is(&[LEFT_PAREN]) {
+            let expr = self.expression();
+            self.consume(RIGHT_PAREN, "Expect ')' after expression.");
+            Grouping::new(expr).into()
+        } else {
+            todo!()
+        }
+    }
+
+    fn consume(&mut self, ty: TokenType, message: &str) -> Token {
         todo!()
     }
 
