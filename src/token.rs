@@ -8,10 +8,10 @@ pub(crate) enum LiteralToken {
 
 #[derive(Debug, Clone)]
 pub(crate) struct Token {
-    _type: TokenType,
+    pub(crate) ty: TokenType,
     pub(crate) lexeme: String,
-    literal: Option<LiteralToken>,
-    line: usize,
+    pub(crate) literal: Option<LiteralToken>,
+    pub(crate) line: usize,
 }
 
 impl Token {
@@ -22,7 +22,7 @@ impl Token {
         line: usize,
     ) -> Self {
         Self {
-            _type: token_type,
+            ty: token_type,
             lexeme: lexeme.to_string(),
             literal,
             line,
