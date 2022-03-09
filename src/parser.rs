@@ -15,7 +15,7 @@ impl Parser {
         }
     }
 
-    fn expression(&self) -> Expr {
+    fn expression(&mut self) -> Expr {
         self.equality()
     }
 
