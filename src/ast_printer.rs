@@ -23,8 +23,7 @@ impl AstPrinter {
 
     fn print_literal_expr(e: Literal) -> String {
         match &e.value {
-            Some(LiteralToken::Number(v)) => format!("{}", v),
-            Some(LiteralToken::String(v)) => format!("{}", v),
+            Some(v) => v.print(),
             None => "nil".to_string(),
         }
     }

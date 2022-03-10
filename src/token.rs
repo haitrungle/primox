@@ -7,6 +7,16 @@ pub(crate) enum LiteralToken {
     String(String),
 }
 
+impl LiteralToken {
+    pub(crate) fn print(&self) -> String {
+        match self {
+            LiteralToken::Bool(b) => format!("{}", b),
+            LiteralToken::Number(n) => format!("{}", n),
+            LiteralToken::String(s) => format!("{}", s),
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub(crate) struct Token {
     pub(crate) ty: TokenType,
