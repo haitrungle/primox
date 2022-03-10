@@ -12,6 +12,8 @@ use std::io::Write;
 use std::process;
 
 use scanner::Scanner;
+use token::Token;
+use token_type::TokenType;
 
 pub struct Lox {
     had_error: bool,
@@ -67,7 +69,16 @@ impl Lox {
         Self::report(line, "", message);
     }
 
+    fn error_token(token: &Token, message: &str) {
+        if token.ty == TokenType::EOF {
+            Self::report(token.line, " at end", message);
+        } else {
+            let lexeme = &format!("at '{}'", token.lexeme);
+            Self::report(token.line, lexeme, message);
+        }
+    }
+
     fn report(line: usize, err: &str, message: &str) {
-        println!("[line {line}] Error {err}: {message}");
+        println!("[line {line}] Error{err}: {message}");
     }
 }

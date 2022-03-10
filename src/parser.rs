@@ -1,3 +1,6 @@
+use std::error::Error;
+use std::fmt::Display;
+
 use crate::expr::*;
 use crate::token::*;
 use crate::token_type::TokenType::{self, *};
@@ -5,6 +8,12 @@ use crate::token_type::TokenType::{self, *};
 struct Parser {
     tokens: Vec<Token>,
     current: usize,
+}
+
+#[derive(Debug)]
+struct ParseError {
+    token: Token,
+    message: String,
 }
 
 impl Parser {
@@ -88,15 +97,21 @@ impl Parser {
             Literal::new(self.previous().literal).into()
         } else if self.current_is(&[LEFT_PAREN]) {
             let expr = self.expression();
-            self.consume(RIGHT_PAREN, "Expect ')' after expression.");
-            Grouping::new(expr).into()
+            match self.consume(&RIGHT_PAREN, "Expect ')' after expression.") {
+                Ok(_) => Grouping::new(expr).into(),
+                Err(e) => todo!(),
+            }
         } else {
             todo!()
         }
     }
 
-    fn consume(&mut self, ty: TokenType, message: &str) -> Token {
-        todo!()
+    fn consume(&mut self, ty: &TokenType, message: &str) -> Result<Token, ParseError> {
+        if self.check(ty) {
+            Ok(self.advance())
+        } else {
+            Err(ParseError::new(&self.peek(), message))
+        }
     }
 
     fn current_is(&mut self, types: &[TokenType]) -> bool {
@@ -138,3 +153,32 @@ impl Parser {
         self.tokens[self.current - 1].clone()
     }
 }
+
+impl ParseError {
+    fn new(token: &Token, message: &str) -> Self {
+        Self {
+            token: token.clone(),
+            message: message.to_string(),
+        }
+    }
+}
+
+impl Display for ParseError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if self.token.ty == EOF {
+            write!(
+                f,
+                "[line {}] Error at end: {}",
+                self.token.line, &self.message
+            )
+        } else {
+            write!(
+                f,
+                "[line {}] Error at '{}': {}",
+                self.token.line, self.token.lexeme, &self.message
+            )
+        }
+    }
+}
+
+impl Error for ParseError {}
