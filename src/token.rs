@@ -12,7 +12,7 @@ impl LiteralToken {
         match self {
             LiteralToken::Bool(b) => format!("{}", b),
             LiteralToken::Number(n) => format!("{}", n),
-            LiteralToken::String(s) => format!("{}", s),
+            LiteralToken::String(s) => format!("\"{}\"", s),
         }
     }
 }
