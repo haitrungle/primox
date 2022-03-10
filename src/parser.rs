@@ -1,10 +1,10 @@
 use std::error::Error;
 use std::fmt::Display;
 
-use crate::Lox;
 use crate::expr::*;
 use crate::token::*;
 use crate::token_type::TokenType::{self, *};
+use crate::Lox;
 
 pub(crate) struct Parser {
     tokens: Vec<Token>,
@@ -26,7 +26,7 @@ impl Parser {
     }
 
     pub(crate) fn parse(&mut self) -> Expr {
-        // TODO: handle error. All methods that parse should return 
+        // TODO: handle error. All methods that parse should return
         // Result<Expr, ParseError> instead of panicking in the middle
         // of parsing
         self.expression()
@@ -172,8 +172,8 @@ impl Parser {
             match self.peek().ty {
                 CLASS | FUN | VAR | FOR | IF | WHILE | PRINT | RETURN => {
                     return;
-                },
-                _ => {},
+                }
+                _ => {}
             }
 
             self.advance();
