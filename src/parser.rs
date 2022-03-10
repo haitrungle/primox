@@ -133,7 +133,6 @@ impl Parser {
     fn current_is(&mut self, types: &[TokenType]) -> bool {
         for ty in types {
             if self.check(ty) {
-                // Not sure we need to consume the token
                 self.advance();
                 return true;
             }
