@@ -1,13 +1,17 @@
-use derive_new::new;
-
 use crate::expr::*;
-use crate::token::LiteralToken;
-use crate::token_type::TokenType;
 
-#[derive(new)]
-struct AstPrinter;
+pub(crate) struct AstPrinter;
 
 impl AstPrinter {
+    pub(crate) fn print(e: Expr) -> String {
+        match e {
+            Expr::Binary(b) => Self::print_binary_expr(*b),
+            Expr::Grouping(g) => Self::print_grouping_expr(*g),
+            Expr::Literal(l) => Self::print_literal_expr(*l),
+            Expr::Unary(u) => Self::print_unary_expr(*u),
+        }
+    }
+
     fn print_binary_expr(e: Binary) -> String {
         format!(
             "({} {} {})",
@@ -31,20 +35,12 @@ impl AstPrinter {
     fn print_unary_expr(e: Unary) -> String {
         format!("({} {})", e.operator.lexeme, Self::print(e.right))
     }
-
-    fn print(e: Expr) -> String {
-        match e {
-            Expr::Binary(b) => Self::print_binary_expr(*b),
-            Expr::Grouping(g) => Self::print_grouping_expr(*g),
-            Expr::Literal(l) => Self::print_literal_expr(*l),
-            Expr::Unary(u) => Self::print_unary_expr(*u),
-        }
-    }
 }
 
 #[cfg(test)]
 mod test {
     use crate::token::{LiteralToken, Token};
+    use crate::token_type::TokenType;
 
     use super::*;
 

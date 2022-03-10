@@ -11,9 +11,9 @@ use std::io;
 use std::io::Write;
 use std::process;
 
+use ast_printer::AstPrinter;
+use parser::Parser;
 use scanner::Scanner;
-use token::Token;
-use token_type::TokenType;
 
 pub struct Lox {
     had_error: bool,
@@ -59,10 +59,15 @@ impl Lox {
     fn run(&mut self, source: String) {
         let mut scanner = Scanner::new(source);
         let tokens = scanner.scan_tokens();
+        let mut parser = Parser::new(&tokens);
+        let expression = parser.parse();
 
-        for token in tokens {
-            println!("{:?}", token);
+        // Stop if there was a syntax error.
+        if self.had_error {
+            return;
         }
+
+        println!("{}", AstPrinter::print(expression));
     }
 
     fn error(line: usize, message: &str) {
