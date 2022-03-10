@@ -6,7 +6,7 @@ use crate::expr::*;
 use crate::token::*;
 use crate::token_type::TokenType::{self, *};
 
-struct Parser {
+pub(crate) struct Parser {
     tokens: Vec<Token>,
     current: usize,
 }
@@ -18,11 +18,18 @@ struct ParseError {
 }
 
 impl Parser {
-    fn new(tokens: &[Token]) -> Self {
+    pub(crate) fn new(tokens: &[Token]) -> Self {
         Self {
             tokens: tokens.to_owned(),
             current: 0,
         }
+    }
+
+    pub(crate) fn parse(&mut self) -> Expr {
+        // TODO: handle error. All methods that parse should return 
+        // Result<Expr, ParseError> instead of panicking in the middle
+        // of parsing
+        self.expression()
     }
 
     fn expression(&mut self) -> Expr {
@@ -100,10 +107,10 @@ impl Parser {
             let expr = self.expression();
             match self.consume(&RIGHT_PAREN, "Expect ')' after expression.") {
                 Ok(_) => Grouping::new(expr).into(),
-                Err(e) => todo!(),
+                Err(e) => panic!("{}", e),
             }
         } else {
-            todo!()
+            panic!("{}", ParseError::new(&self.peek(), "Expect expression."));
         }
     }
 
@@ -152,6 +159,25 @@ impl Parser {
 
     fn previous(&self) -> Token {
         self.tokens[self.current - 1].clone()
+    }
+
+    fn synchronize(&mut self) {
+        self.advance();
+
+        while !self.is_at_end() {
+            if self.previous().ty == SEMICOLON {
+                return;
+            }
+
+            match self.peek().ty {
+                CLASS | FUN | VAR | FOR | IF | WHILE | PRINT | RETURN => {
+                    return;
+                },
+                _ => {},
+            }
+
+            self.advance();
+        }
     }
 }
 
