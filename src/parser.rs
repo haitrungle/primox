@@ -33,7 +33,15 @@ impl Parser {
     }
 
     fn expression(&mut self) -> Expr {
-        self.equality()
+        let mut expr = self.equality();
+
+        while self.current_is(&[COMMA]) {
+            let comma = self.previous();
+            let right = self.equality();
+            expr = Binary::new(expr, comma, right).into();
+        }
+    
+        expr
     }
 
     fn equality(&mut self) -> Expr {
