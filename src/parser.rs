@@ -1,6 +1,7 @@
 use std::error::Error;
 use std::fmt::Display;
 
+use crate::Lox;
 use crate::expr::*;
 use crate::token::*;
 use crate::token_type::TokenType::{self, *};
@@ -168,14 +169,14 @@ impl Display for ParseError {
         if self.token.ty == EOF {
             write!(
                 f,
-                "[line {}] Error at end: {}",
-                self.token.line, &self.message
+                "{}",
+                Lox::error_message(self.token.line, " at end", &self.message),
             )
         } else {
             write!(
                 f,
-                "[line {}] Error at '{}': {}",
-                self.token.line, self.token.lexeme, &self.message
+                "{}",
+                Lox::error_message(self.token.line, &self.token.lexeme, &self.message),
             )
         }
     }
