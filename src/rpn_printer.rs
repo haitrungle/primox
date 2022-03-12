@@ -8,11 +8,11 @@ pub(crate) struct RpnPrinter;
 impl RpnPrinter {
     pub(crate) fn print(e: Expr) -> String {
         match e {
-            Expr::Binary(b) => Self::print_binary_expr(*b),
-            Expr::Grouping(g) => Self::print_grouping_expr(*g),
-            Expr::Literal(l) => Self::print_literal_expr(*l),
-            Expr::Ternary(t) => Self::print_ternary_expr(*t),
-            Expr::Unary(u) => Self::print_unary_expr(*u),
+            Expr::Binary(e) => Self::print_binary_expr(*e),
+            Expr::Grouping(e) => Self::print_grouping_expr(*e),
+            Expr::Literal(e) => Self::print_literal_expr(*e),
+            Expr::Ternary(e) => Self::print_ternary_expr(*e),
+            Expr::Unary(e) => Self::print_unary_expr(*e),
         }
     }
 

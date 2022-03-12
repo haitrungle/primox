@@ -41,31 +41,31 @@ pub(crate) struct Unary {
 }
 
 impl From<Binary> for Expr {
-    fn from(b: Binary) -> Self {
-        Self::Binary(Box::new(b))
+    fn from(e: Binary) -> Self {
+        Self::Binary(Box::new(e))
     }
 }
 
 impl From<Grouping> for Expr {
-    fn from(b: Grouping) -> Self {
-        Self::Grouping(Box::new(b))
+    fn from(e: Grouping) -> Self {
+        Self::Grouping(Box::new(e))
     }
 }
 
 impl From<Literal> for Expr {
-    fn from(b: Literal) -> Self {
-        Self::Literal(Box::new(b))
+    fn from(e: Literal) -> Self {
+        Self::Literal(Box::new(e))
     }
 }
 
 impl From<Ternary> for Expr {
-    fn from(b: Ternary) -> Self {
-        Self::Ternary(Box::new(b))
+    fn from(e: Ternary) -> Self {
+        Self::Ternary(Box::new(e))
     }
 }
 
 impl From<Unary> for Expr {
-    fn from(b: Unary) -> Self {
-        Self::Unary(Box::new(b))
+    fn from(e: Unary) -> Self {
+        Self::Unary(Box::new(e))
     }
 }
