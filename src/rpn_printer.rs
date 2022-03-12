@@ -11,6 +11,7 @@ impl RpnPrinter {
             Expr::Binary(b) => Self::print_binary_expr(*b),
             Expr::Grouping(g) => Self::print_grouping_expr(*g),
             Expr::Literal(l) => Self::print_literal_expr(*l),
+            Expr::Ternary(t) => Self::print_ternary_expr(*t),
             Expr::Unary(u) => Self::print_unary_expr(*u),
         }
     }
@@ -33,6 +34,15 @@ impl RpnPrinter {
             Some(v) => v.print(),
             None => "nil".to_string(),
         }
+    }
+
+    fn print_ternary_expr(e: Ternary) -> String {
+        format!(
+            "{} {} {} ?:",
+            Self::print(e.left),
+            Self::print(e.mid),
+            Self::print(e.right),
+        )
     }
 
     fn print_unary_expr(e: Unary) -> String {

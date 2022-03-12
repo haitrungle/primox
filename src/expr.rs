@@ -6,6 +6,7 @@ pub(crate) enum Expr {
     Binary(Box<Binary>),
     Grouping(Box<Grouping>),
     Literal(Box<Literal>),
+    Ternary(Box<Ternary>),
     Unary(Box<Unary>),
 }
 
@@ -24,6 +25,13 @@ pub(crate) struct Grouping {
 #[derive(new, Debug)]
 pub(crate) struct Literal {
     pub(crate) value: Option<LiteralToken>,
+}
+
+#[derive(new, Debug)]
+pub(crate) struct Ternary {
+    pub(crate) left: Expr,
+    pub(crate) mid: Expr,
+    pub(crate) right: Expr,
 }
 
 #[derive(new, Debug)]
@@ -47,6 +55,12 @@ impl From<Grouping> for Expr {
 impl From<Literal> for Expr {
     fn from(b: Literal) -> Self {
         Self::Literal(Box::new(b))
+    }
+}
+
+impl From<Ternary> for Expr {
+    fn from(b: Ternary) -> Self {
+        Self::Ternary(Box::new(b))
     }
 }
 
