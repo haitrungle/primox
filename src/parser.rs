@@ -43,7 +43,7 @@ impl Parser {
             let right = self.equality()?;
             expr = Binary::new(expr, comma, right).into();
         }
-    
+
         Ok(expr)
     }
 
@@ -210,7 +210,11 @@ impl Display for ParseError {
             write!(
                 f,
                 "{}",
-                Lox::error_message(self.token.line, &format!(" at '{}'", &self.token.lexeme), &self.message),
+                Lox::error_message(
+                    self.token.line,
+                    &format!(" at '{}'", &self.token.lexeme),
+                    &self.message
+                ),
             )
         }
     }

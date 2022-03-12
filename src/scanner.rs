@@ -1,5 +1,5 @@
-use std::fmt::Display;
 use std::error::Error;
+use std::fmt::Display;
 
 use crate::token_type::TokenType::{self, *};
 use crate::{token::*, Lox};
@@ -262,11 +262,7 @@ impl ScanError {
 
 impl Display for ScanError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{}",
-            Lox::error_message(self.line, "", &self.message),
-        )
+        write!(f, "{}", Lox::error_message(self.line, "", &self.message),)
     }
 }
 
