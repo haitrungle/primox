@@ -13,7 +13,7 @@ pub(crate) struct Scanner {
 }
 
 #[derive(Debug)]
-pub(crate) struct ScanError {
+struct ScanError {
     line: usize,
     message: String,
 }
@@ -51,18 +51,18 @@ impl Scanner {
         }
     }
 
-    pub(crate) fn scan_tokens(&mut self) -> Option<Vec<Token>> {
+    pub(crate) fn scan_tokens(&mut self, lox: &mut Lox) -> Vec<Token> {
         while !(self.is_at_end()) {
             self.start = self.current;
-            self.scan_token();
+            self.scan_token(lox);
         }
 
         let token = Token::new(EOF, "", None, self.line);
         self.tokens.push(token);
-        Some(self.tokens.clone())
+        self.tokens.clone()
     }
 
-    fn scan_token(&mut self) -> Result<(), ScanError> {
+    fn scan_token(&mut self, lox: &mut Lox) {
         let c: char = self.advance();
         match c {
             '(' => self.add_token(LEFT_PAREN, None),
@@ -115,7 +115,7 @@ impl Scanner {
                         self.advance();
                     }
                     if self.is_at_end() {
-                        return Err(ScanError::new(self.line, "Unterminated multiline comment."));
+                        lox.report(ScanError::new(self.line, "Unterminated multiline comment."));
                     }
                     self.advance();
                     self.advance();
@@ -128,7 +128,7 @@ impl Scanner {
 
             '\n' => self.line += 1,
 
-            '"' => self.string(),
+            '"' => self.string(lox),
 
             // TODO: coalesce a run of invalid characters into a single error
             _ => {
@@ -137,12 +137,10 @@ impl Scanner {
                 } else if c.is_ascii_alphabetic() {
                     self.identifier();
                 } else {
-                    return Err(ScanError::new(self.line, "Unexpected character"));
+                    lox.report(ScanError::new(self.line, "Unexpected character"));
                 }
             }
         }
-
-        Ok(())
     }
 
     fn identifier(&mut self) {
@@ -156,7 +154,7 @@ impl Scanner {
         self.add_token(token_type, None);
     }
 
-    fn string(&mut self) {
+    fn string(&mut self, lox: &mut Lox) {
         while self.peek() != '"' && !self.is_at_end() {
             if self.peek() == '\n' {
                 self.line += 1;
@@ -165,7 +163,7 @@ impl Scanner {
         }
 
         if self.is_at_end() {
-            Lox::error(self.line, "Unterminated string");
+            lox.report(ScanError::new(self.line, "Unterminated string"));
             return;
         }
 

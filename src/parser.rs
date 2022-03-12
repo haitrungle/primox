@@ -25,8 +25,14 @@ impl Parser {
         }
     }
 
-    pub(crate) fn parse(&mut self) -> Option<Expr> {
-        self.expression().ok()
+    pub(crate) fn parse(&mut self, lox: &mut Lox) -> Option<Expr> {
+        match self.expression() {
+            Ok(expr) => Some(expr),
+            Err(e) => {
+                lox.report(e);
+                None
+            }
+        }
     }
 
     fn expression(&mut self) -> Result<Expr, ParseError> {
@@ -204,7 +210,7 @@ impl Display for ParseError {
             write!(
                 f,
                 "{}",
-                Lox::error_message(self.token.line, &self.token.lexeme, &self.message),
+                Lox::error_message(self.token.line, &format!(" at '{}'", &self.token.lexeme), &self.message),
             )
         }
     }

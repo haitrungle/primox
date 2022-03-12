@@ -58,27 +58,25 @@ impl Lox {
 
     fn run(&mut self, source: String) {
         let mut scanner = Scanner::new(source);
-        let tokens = scanner.scan_tokens().expect("Scanning error");
+        let tokens = scanner.scan_tokens(self);
+
         let mut parser = Parser::new(&tokens);
-        let expression = parser.parse().expect("Parsing error.");
+        let expression = parser.parse(self);
 
         // Stop if there was a syntax error.
         if self.had_error {
             return;
         }
 
-        println!("{}", AstPrinter::print(expression));
-    }
-
-    fn error(line: usize, message: &str) {
-        Self::report(line, "", message);
+        println!("{}", AstPrinter::print(expression.unwrap()));
     }
 
     fn error_message(line: usize, err: &str, message: &str) -> String {
         format!("[line {line}] Error{err}: {message}")
     }
 
-    fn report(line: usize, err: &str, message: &str) {
-        println!("{}", Self::error_message(line, err, message));
+    fn report(&mut self, e: impl std::error::Error) {
+        self.had_error = true;
+        println!("{}", e);
     }
 }
