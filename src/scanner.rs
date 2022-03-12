@@ -75,6 +75,8 @@ impl Scanner {
             '+' => self.add_token(PLUS, None),
             ';' => self.add_token(SEMICOLON, None),
             '*' => self.add_token(STAR, None),
+            '?' => self.add_token(QUESTION, None),
+            ':' => self.add_token(COLON, None),
 
             '!' => {
                 let t = if self.next_is('=') { BANG_EQUAL } else { BANG };
