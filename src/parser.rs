@@ -65,7 +65,7 @@ impl Parser {
     }
 
     fn equality(&mut self) -> Result<Expr, ParseError> {
-        let mut expr: Expr = self.comparison()?;
+        let mut expr = self.comparison()?;
 
         while self.current_is(&[BANG_EQUAL, EQUAL_EQUAL]) {
             let operator = self.previous();
@@ -77,7 +77,7 @@ impl Parser {
     }
 
     fn comparison(&mut self) -> Result<Expr, ParseError> {
-        let mut term: Expr = self.term()?;
+        let mut term = self.term()?;
 
         while self.current_is(&[GREATER, GREATER_EQUAL, LESS, LESS_EQUAL]) {
             let operator = self.previous();
@@ -89,7 +89,7 @@ impl Parser {
     }
 
     fn term(&mut self) -> Result<Expr, ParseError> {
-        let mut factor: Expr = self.factor()?;
+        let mut factor = self.factor()?;
 
         while self.current_is(&[MINUS, PLUS]) {
             let operator = self.previous();
@@ -101,7 +101,7 @@ impl Parser {
     }
 
     fn factor(&mut self) -> Result<Expr, ParseError> {
-        let mut unary: Expr = self.unary()?;
+        let mut unary = self.unary()?;
 
         while self.current_is(&[SLASH, STAR]) {
             let operator = self.previous();
