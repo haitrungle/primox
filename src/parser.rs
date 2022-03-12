@@ -36,12 +36,29 @@ impl Parser {
     }
 
     fn expression(&mut self) -> Result<Expr, ParseError> {
-        let mut expr = self.equality()?;
+        self.comma()
+    }
+
+    fn comma(&mut self) -> Result<Expr, ParseError> {
+        let mut expr = self.ternary()?;
 
         while self.current_is(&[COMMA]) {
             let comma = self.previous();
-            let right = self.equality()?;
+            let right = self.ternary()?;
             expr = Binary::new(expr, comma, right).into();
+        }
+
+        Ok(expr)
+    }
+
+    fn ternary(&mut self) -> Result<Expr, ParseError> {
+        let mut expr = self.equality()?;
+
+        while self.current_is(&[QUESTION]) {
+            let mid = self.expression()?;
+            self.consume(&COLON, "Expect ':' in ternary expression.")?;
+            let right = self.ternary()?;
+            expr = Ternary::new(expr, mid, right).into();
         }
 
         Ok(expr)
