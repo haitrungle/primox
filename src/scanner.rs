@@ -1,3 +1,6 @@
+use std::fmt::Display;
+use std::error::Error;
+
 use crate::token_type::TokenType::{self, *};
 use crate::{token::*, Lox};
 
@@ -7,6 +10,12 @@ pub(crate) struct Scanner {
     start: usize,
     current: usize,
     line: usize,
+}
+
+#[derive(Debug)]
+pub(crate) struct ScanError {
+    line: usize,
+    message: String,
 }
 
 impl Scanner {
@@ -42,7 +51,7 @@ impl Scanner {
         }
     }
 
-    pub(crate) fn scan_tokens(&mut self) -> Vec<Token> {
+    pub(crate) fn scan_tokens(&mut self) -> Option<Vec<Token>> {
         while !(self.is_at_end()) {
             self.start = self.current;
             self.scan_token();
@@ -50,10 +59,10 @@ impl Scanner {
 
         let token = Token::new(EOF, "", None, self.line);
         self.tokens.push(token);
-        self.tokens.clone()
+        Some(self.tokens.clone())
     }
 
-    fn scan_token(&mut self) {
+    fn scan_token(&mut self) -> Result<(), ScanError> {
         let c: char = self.advance();
         match c {
             '(' => self.add_token(LEFT_PAREN, None),
@@ -106,8 +115,7 @@ impl Scanner {
                         self.advance();
                     }
                     if self.is_at_end() {
-                        Lox::error(self.line, "Unterminated multiline comment");
-                        return;
+                        return Err(ScanError::new(self.line, "Unterminated multiline comment."));
                     }
                     self.advance();
                     self.advance();
@@ -129,10 +137,12 @@ impl Scanner {
                 } else if c.is_ascii_alphabetic() {
                     self.identifier();
                 } else {
-                    Lox::error(self.line, "Unexpected character");
+                    return Err(ScanError::new(self.line, "Unexpected character"));
                 }
             }
         }
+
+        Ok(())
     }
 
     fn identifier(&mut self) {
@@ -242,3 +252,24 @@ impl Scanner {
         self.current >= self.source.len()
     }
 }
+
+impl ScanError {
+    fn new(line: usize, message: &str) -> Self {
+        Self {
+            line,
+            message: message.to_string(),
+        }
+    }
+}
+
+impl Display for ScanError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            Lox::error_message(self.line, "", &self.message),
+        )
+    }
+}
+
+impl Error for ScanError {}

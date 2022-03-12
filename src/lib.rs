@@ -58,9 +58,9 @@ impl Lox {
 
     fn run(&mut self, source: String) {
         let mut scanner = Scanner::new(source);
-        let tokens = scanner.scan_tokens();
+        let tokens = scanner.scan_tokens().expect("Scanning error");
         let mut parser = Parser::new(&tokens);
-        let expression = parser.parse();
+        let expression = parser.parse().expect("Parsing error.");
 
         // Stop if there was a syntax error.
         if self.had_error {
