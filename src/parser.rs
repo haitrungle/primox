@@ -25,100 +25,95 @@ impl Parser {
         }
     }
 
-    pub(crate) fn parse(&mut self) -> Expr {
-        // TODO: handle error. All methods that parse should return
-        // Result<Expr, ParseError> instead of panicking in the middle
-        // of parsing
-        self.expression()
+    pub(crate) fn parse(&mut self) -> Option<Expr> {
+        self.expression().ok()
     }
 
-    fn expression(&mut self) -> Expr {
-        let mut expr = self.equality();
+    fn expression(&mut self) -> Result<Expr, ParseError> {
+        let mut expr = self.equality()?;
 
         while self.current_is(&[COMMA]) {
             let comma = self.previous();
-            let right = self.equality();
+            let right = self.equality()?;
             expr = Binary::new(expr, comma, right).into();
         }
     
-        expr
+        Ok(expr)
     }
 
-    fn equality(&mut self) -> Expr {
-        let mut expr: Expr = self.comparison();
+    fn equality(&mut self) -> Result<Expr, ParseError> {
+        let mut expr: Expr = self.comparison()?;
 
         while self.current_is(&[BANG_EQUAL, EQUAL_EQUAL]) {
             let operator = self.previous();
-            let right = self.comparison();
+            let right = self.comparison()?;
             expr = Binary::new(expr, operator, right).into();
         }
 
-        expr
+        Ok(expr)
     }
 
-    fn comparison(&mut self) -> Expr {
-        let mut term: Expr = self.term();
+    fn comparison(&mut self) -> Result<Expr, ParseError> {
+        let mut term: Expr = self.term()?;
 
         while self.current_is(&[GREATER, GREATER_EQUAL, LESS, LESS_EQUAL]) {
             let operator = self.previous();
-            let right = self.term();
+            let right = self.term()?;
             term = Binary::new(term, operator, right).into();
         }
 
-        term
+        Ok(term)
     }
 
-    fn term(&mut self) -> Expr {
-        let mut factor: Expr = self.factor();
+    fn term(&mut self) -> Result<Expr, ParseError> {
+        let mut factor: Expr = self.factor()?;
 
         while self.current_is(&[MINUS, PLUS]) {
             let operator = self.previous();
-            let right = self.factor();
+            let right = self.factor()?;
             factor = Binary::new(factor, operator, right).into();
         }
 
-        factor
+        Ok(factor)
     }
 
-    fn factor(&mut self) -> Expr {
-        let mut unary: Expr = self.unary();
+    fn factor(&mut self) -> Result<Expr, ParseError> {
+        let mut unary: Expr = self.unary()?;
 
         while self.current_is(&[SLASH, STAR]) {
             let operator = self.previous();
-            let right = self.unary();
+            let right = self.unary()?;
             unary = Binary::new(unary, operator, right).into();
         }
 
-        unary
+        Ok(unary)
     }
 
-    fn unary(&mut self) -> Expr {
+    fn unary(&mut self) -> Result<Expr, ParseError> {
         if self.current_is(&[BANG, MINUS]) {
             let operator = self.previous();
-            let right = self.unary();
-            Unary::new(operator, right).into()
+            let right = self.unary()?;
+            Ok(Unary::new(operator, right).into())
         } else {
             self.primary()
         }
     }
 
-    fn primary(&mut self) -> Expr {
+    fn primary(&mut self) -> Result<Expr, ParseError> {
         if self.current_is(&[FALSE]) {
-            Literal::new(Some(LiteralToken::Bool(false))).into()
+            Ok(Literal::new(Some(LiteralToken::Bool(false))).into())
         } else if self.current_is(&[TRUE]) {
-            Literal::new(Some(LiteralToken::Bool(true))).into()
+            Ok(Literal::new(Some(LiteralToken::Bool(true))).into())
         } else if self.current_is(&[NIL]) {
-            Literal::new(None).into()
+            Ok(Literal::new(None).into())
         } else if self.current_is(&[NUMBER, STRING]) {
-            Literal::new(self.previous().literal).into()
+            Ok(Literal::new(self.previous().literal).into())
         } else if self.current_is(&[LEFT_PAREN]) {
-            let expr = self.expression();
-            match self.consume(&RIGHT_PAREN, "Expect ')' after expression.") {
-                Ok(_) => Grouping::new(expr).into(),
-                Err(e) => panic!("{}", e),
-            }
+            let expr = self.expression()?;
+            self.consume(&RIGHT_PAREN, "Expect ')' after expression.")?;
+            Ok(Grouping::new(expr).into())
         } else {
-            panic!("{}", ParseError::new(&self.peek(), "Expect expression."));
+            Err(ParseError::new(&self.peek(), "Expect expression."))
         }
     }
 
