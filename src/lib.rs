@@ -1,10 +1,12 @@
 mod ast_printer;
 mod expr;
 mod parser;
-mod rpn_printer;
 mod scanner;
 mod token;
 mod token_type;
+
+#[cfg(feature = "rpn-printer")]
+mod rpn_printer;
 
 use std::fs;
 use std::io;
