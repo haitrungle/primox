@@ -124,11 +124,11 @@ impl Parser {
 
     fn primary(&mut self) -> Result<Expr, ParseError> {
         if self.current_is(&[FALSE]) {
-            Ok(Literal::new(Some(LiteralToken::Bool(false))).into())
+            Ok(Literal::new(LiteralToken::Bool(false)).into())
         } else if self.current_is(&[TRUE]) {
-            Ok(Literal::new(Some(LiteralToken::Bool(true))).into())
+            Ok(Literal::new(LiteralToken::Bool(true)).into())
         } else if self.current_is(&[NIL]) {
-            Ok(Literal::new(None).into())
+            Ok(Literal::new(LiteralToken::Null).into())
         } else if self.current_is(&[NUMBER, STRING]) {
             Ok(Literal::new(self.previous().literal).into())
         } else if self.current_is(&[LEFT_PAREN]) {

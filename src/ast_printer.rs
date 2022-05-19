@@ -27,10 +27,7 @@ impl AstPrinter {
     }
 
     fn print_literal_expr(e: Literal) -> String {
-        match &e.value {
-            Some(v) => v.print(),
-            None => "nil".to_string(),
-        }
+        e.value.print()
     }
 
     fn print_ternary_expr(e: Ternary) -> String {
@@ -58,12 +55,12 @@ mod test {
     fn test_print() {
         let expr: Expr = Binary::new(
             Unary::new(
-                Token::new(TokenType::MINUS, "-", None, 1),
-                Literal::new(Some(LiteralToken::Number(123.0))).into(),
+                Token::new(TokenType::MINUS, "-", LiteralToken::Null, 1),
+                Literal::new(LiteralToken::Number(123.0)).into(),
             )
             .into(),
-            Token::new(TokenType::STAR, "*", None, 1),
-            Grouping::new(Literal::new(Some(LiteralToken::Number(45.67))).into()).into(),
+            Token::new(TokenType::STAR, "*", LiteralToken::Null, 1),
+            Grouping::new(Literal::new(LiteralToken::Number(45.67)).into()).into(),
         )
         .into();
 

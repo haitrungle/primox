@@ -24,7 +24,7 @@ pub(crate) struct Grouping {
 
 #[derive(new, Debug)]
 pub(crate) struct Literal {
-    pub(crate) value: Option<LiteralToken>,
+    pub(crate) value: LiteralToken,
 }
 
 #[derive(new, Debug)]

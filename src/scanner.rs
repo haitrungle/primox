@@ -57,7 +57,7 @@ impl Scanner {
             self.scan_token(lox);
         }
 
-        let token = Token::new(EOF, "", None, self.line);
+        let token = Token::new(EOF, "", LiteralToken::Null, self.line);
         self.tokens.push(token);
         self.tokens.clone()
     }
@@ -65,22 +65,22 @@ impl Scanner {
     fn scan_token(&mut self, lox: &mut Lox) {
         let c: char = self.advance();
         match c {
-            '(' => self.add_token(LEFT_PAREN, None),
-            ')' => self.add_token(RIGHT_PAREN, None),
-            '{' => self.add_token(LEFT_BRACE, None),
-            '}' => self.add_token(RIGHT_BRACE, None),
-            ',' => self.add_token(COMMA, None),
-            '.' => self.add_token(DOT, None),
-            '-' => self.add_token(MINUS, None),
-            '+' => self.add_token(PLUS, None),
-            ';' => self.add_token(SEMICOLON, None),
-            '*' => self.add_token(STAR, None),
-            '?' => self.add_token(QUESTION, None),
-            ':' => self.add_token(COLON, None),
+            '(' => self.add_token(LEFT_PAREN, LiteralToken::Null),
+            ')' => self.add_token(RIGHT_PAREN, LiteralToken::Null),
+            '{' => self.add_token(LEFT_BRACE, LiteralToken::Null),
+            '}' => self.add_token(RIGHT_BRACE, LiteralToken::Null),
+            ',' => self.add_token(COMMA, LiteralToken::Null),
+            '.' => self.add_token(DOT, LiteralToken::Null),
+            '-' => self.add_token(MINUS, LiteralToken::Null),
+            '+' => self.add_token(PLUS, LiteralToken::Null),
+            ';' => self.add_token(SEMICOLON, LiteralToken::Null),
+            '*' => self.add_token(STAR, LiteralToken::Null),
+            '?' => self.add_token(QUESTION, LiteralToken::Null),
+            ':' => self.add_token(COLON, LiteralToken::Null),
 
             '!' => {
                 let t = if self.next_is('=') { BANG_EQUAL } else { BANG };
-                self.add_token(t, None);
+                self.add_token(t, LiteralToken::Null);
             }
             '=' => {
                 let t = if self.next_is('=') {
@@ -88,11 +88,11 @@ impl Scanner {
                 } else {
                     EQUAL
                 };
-                self.add_token(t, None);
+                self.add_token(t, LiteralToken::Null);
             }
             '<' => {
                 let t = if self.next_is('=') { LESS_EQUAL } else { LESS };
-                self.add_token(t, None);
+                self.add_token(t, LiteralToken::Null);
             }
             '>' => {
                 let t = if self.next_is('=') {
@@ -100,7 +100,7 @@ impl Scanner {
                 } else {
                     GREATER
                 };
-                self.add_token(t, None);
+                self.add_token(t, LiteralToken::Null);
             }
 
             '/' => {
@@ -122,7 +122,7 @@ impl Scanner {
                     self.advance();
                     self.advance();
                 } else {
-                    self.add_token(SLASH, None);
+                    self.add_token(SLASH, LiteralToken::Null);
                 }
             }
 
@@ -153,7 +153,7 @@ impl Scanner {
         let text = self.source.get(self.start..self.current).unwrap();
         let token_type = Self::keywords(text).unwrap_or(IDENTIFIER);
 
-        self.add_token(token_type, None);
+        self.add_token(token_type, LiteralToken::Null);
     }
 
     fn string(&mut self, lox: &mut Lox) {
@@ -178,7 +178,7 @@ impl Scanner {
             .get((self.start + 1)..(self.current - 1))
             .unwrap()
             .to_string();
-        self.add_token(STRING, Some(LiteralToken::String(value)));
+        self.add_token(STRING, LiteralToken::String(value));
     }
 
     fn number(&mut self) {
@@ -201,7 +201,7 @@ impl Scanner {
             .unwrap()
             .parse::<f64>()
             .unwrap();
-        self.add_token(NUMBER, Some(LiteralToken::Number(value)));
+        self.add_token(NUMBER, LiteralToken::Number(value));
     }
 
     fn next_is(&mut self, expected: char) -> bool {
@@ -242,7 +242,7 @@ impl Scanner {
         self.source.chars().nth(position).unwrap()
     }
 
-    fn add_token(&mut self, token_type: TokenType, literal: Option<LiteralToken>) {
+    fn add_token(&mut self, token_type: TokenType, literal: LiteralToken) {
         let text = self.source.get(self.start..self.current).unwrap();
         let token = Token::new(token_type, text, literal, self.line);
         self.tokens.push(token);
