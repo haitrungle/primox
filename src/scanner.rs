@@ -117,7 +117,7 @@ impl Scanner {
                         self.advance();
                     }
                     if self.is_at_end() {
-                        lox.report(ScanError::new(self.line, "Unterminated multiline comment."));
+                        lox.error(ScanError::new(self.line, "Unterminated multiline comment."));
                     }
                     self.advance();
                     self.advance();
@@ -139,7 +139,7 @@ impl Scanner {
                 } else if c.is_ascii_alphabetic() {
                     self.identifier();
                 } else {
-                    lox.report(ScanError::new(self.line, "Unexpected character"));
+                    lox.error(ScanError::new(self.line, "Unexpected character"));
                 }
             }
         }
@@ -165,7 +165,7 @@ impl Scanner {
         }
 
         if self.is_at_end() {
-            lox.report(ScanError::new(self.line, "Unterminated string"));
+            lox.error(ScanError::new(self.line, "Unterminated string"));
             return;
         }
 

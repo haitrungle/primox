@@ -12,7 +12,7 @@ pub(crate) struct Parser {
 }
 
 #[derive(Debug)]
-struct ParseError {
+pub(crate) struct ParseError {
     token: Token,
     message: String,
 }
@@ -25,14 +25,8 @@ impl Parser {
         }
     }
 
-    pub(crate) fn parse(&mut self, lox: &mut Lox) -> Option<Expr> {
-        match self.expression() {
-            Ok(expr) => Some(expr),
-            Err(e) => {
-                lox.report(e);
-                None
-            }
-        }
+    pub(crate) fn parse(&mut self) -> Result<Expr, ParseError> {
+        self.expression()
     }
 
     fn expression(&mut self) -> Result<Expr, ParseError> {

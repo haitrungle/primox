@@ -1,5 +1,6 @@
 mod ast_printer;
 mod expr;
+mod interpreter;
 mod parser;
 mod scanner;
 mod token;
@@ -13,17 +14,20 @@ use std::io;
 use std::io::Write;
 use std::process;
 
-use ast_printer::AstPrinter;
+use interpreter::Interpreter;
 use parser::Parser;
 use scanner::Scanner;
 
 pub struct Lox {
+    interpreter: Interpreter,
     had_error: bool,
+    had_runtime_error: bool,
 }
 
 impl Lox {
     pub fn new() -> Self {
-        Self { had_error: false }
+        let interpreter = Interpreter::new();
+        Self { interpreter, had_error: false, had_runtime_error: false, }
     }
 
     pub fn run_file(&mut self, path: &str) {
@@ -31,6 +35,9 @@ impl Lox {
         self.run(content);
         if self.had_error {
             process::exit(65);
+        }
+        if self.had_runtime_error {
+            process::exit(70);
         }
     }
 
@@ -63,22 +70,31 @@ impl Lox {
         let tokens = scanner.scan_tokens(self);
 
         let mut parser = Parser::new(&tokens);
-        let expression = parser.parse(self);
+        let expression = match parser.parse() {
+            Ok(expr) => expr,
+            Err(e) => {
+                self.error(e);
+                return;
+            }
+        };
 
-        // Stop if there was a syntax error.
-        if self.had_error {
-            return;
-        }
-
-        println!("{}", AstPrinter::print(expression.unwrap()));
+        match self.interpreter.interprete(expression) {
+            Ok(value) => println!("{}", value),
+            Err(e) => self.runtime_error(e),
+        };
     }
 
     fn error_message(line: usize, err: &str, message: &str) -> String {
         format!("[line {line}] Error{err}: {message}")
     }
 
-    fn report(&mut self, e: impl std::error::Error) {
+    fn error(&mut self, e: impl std::error::Error) {
         self.had_error = true;
+        println!("{}", e);
+    }
+
+    fn runtime_error(&mut self, e: impl std::error::Error) {
+        self.had_runtime_error = true;
         println!("{}", e);
     }
 }
