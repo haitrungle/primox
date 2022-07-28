@@ -2,6 +2,7 @@ use std::error::Error;
 use std::fmt::Display;
 
 use crate::expr::*;
+use crate::stmt::Stmt;
 use crate::token::*;
 use crate::token_type::TokenType::{self, *};
 use crate::Lox;
@@ -25,12 +26,37 @@ impl Parser {
         }
     }
 
-    pub(crate) fn parse(&mut self) -> Result<Expr, ParseError> {
-        self.expression()
+    pub(crate) fn parse(&mut self) -> Result<Vec<Stmt>, ParseError> {
+        let statements = vec![];
+        while !self.is_at_end() {
+            statements.push(self.statement()?);
+        }
+
+        Ok(statements)
     }
 
     fn expression(&mut self) -> Result<Expr, ParseError> {
         self.comma()
+    }
+
+    fn statement(&mut self) -> Result<Stmt, ParseError> {
+        if self.current_is(&[PRINT]) {
+            self.print_statement()
+        } else {
+            self.expression_statement()
+        }
+    }
+
+    fn print_statement(&mut self) -> Result<Stmt, ParseError> {
+        let value = self.expression()?;
+        self.consume(&SEMICOLON, "Expect ';' after value.");
+        Ok(Stmt::Print(value))
+    }
+
+    fn expression_statement(&mut self) -> Result<Stmt, ParseError> {
+        let expr = self.expression()?;
+        self.consume(&SEMICOLON, "Expect ';' after expression.");
+        Ok(Stmt::Expression(expr))
     }
 
     fn comma(&mut self) -> Result<Expr, ParseError> {
