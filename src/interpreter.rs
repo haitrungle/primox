@@ -2,6 +2,7 @@ use std::error::Error;
 use std::fmt::Display;
 
 use crate::expr::*;
+use crate::stmt::*;
 use crate::token::*;
 use crate::token_type::TokenType::*;
 
@@ -47,8 +48,11 @@ impl Interpreter {
         Self {}
     }
 
-    pub(crate) fn interprete(&mut self, expr: Expr) -> Result<Value, RuntimeError> {
-        Self::evaluate(expr)
+    pub(crate) fn interprete(&mut self, statements: Vec<Stmt>) -> Result<(), RuntimeError> {
+        for statement in statements {
+            self.execute(statement)?;
+        }
+        Ok(())
     }
 
     fn evaluate(expr: Expr) -> Result<Value, RuntimeError> {
@@ -59,6 +63,24 @@ impl Interpreter {
             Expr::Ternary(e) => Self::ternary_expr(*e),
             Expr::Unary(e) => Self::unary_expr(*e),
         }
+    }
+
+    fn execute(&mut self, statement: Stmt) -> Result<(), RuntimeError> {
+        match statement {
+            Stmt::Expression(s) => Self::expression_stmt(s),
+            Stmt::Print(s) => Self::print_stmt(s),
+        }
+    }
+
+    fn expression_stmt(stmt: ExpressionStmt) -> Result<(), RuntimeError> {
+        Self::evaluate(stmt.expression)?;
+        Ok(())
+    }
+
+    fn print_stmt(stmt: PrintStmt) -> Result<(), RuntimeError> {
+        let value = Self::evaluate(stmt.expression)?;
+        println!("{}", value);
+        Ok(())
     }
 
     fn binary_expr(expr: Binary) -> Result<Value, RuntimeError> {

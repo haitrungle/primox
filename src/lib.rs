@@ -71,7 +71,7 @@ impl Lox {
         let tokens = scanner.scan_tokens(self);
 
         let mut parser = Parser::new(&tokens);
-        let expression = match parser.parse() {
+        let statements = match parser.parse() {
             Ok(expr) => expr,
             Err(e) => {
                 self.error(e);
@@ -79,10 +79,7 @@ impl Lox {
             }
         };
 
-        match self.interpreter.interprete(expression) {
-            Ok(value) => println!("{}", value),
-            Err(e) => self.runtime_error(e),
-        };
+        self.interpreter.interprete(statements);
     }
 
     fn error_message(line: usize, err: &str, message: &str) -> String {
