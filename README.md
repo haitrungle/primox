@@ -1,4 +1,4 @@
-# Primox: implementing Lox in Result (WIP)
+# Primox: implementing Lox in Rust (WIP)
 
 This project creates a programming language, following the book [Crafting Interpreters](https://craftinginterpreters.com), but in Rust instead of Java.
 
